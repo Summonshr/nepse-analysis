@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Artisan;
 class ScrapeController extends Controller
 {
     public function start(){
-        Artisan::call('scrape:company-list');   
+        Artisan::call('scrape:todays-share-price');   
         dd('here');
         $crawler = Goutte::request('GET', 'http://www.nepalstock.com/');
         return $crawler->filter('table')->each(function($node){
