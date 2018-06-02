@@ -3,8 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Console\Commands\TopByTurnover;
-
+use DB;
+use Collection;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -14,6 +14,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        DB::listen(function($query){
+            logger($query->sql.'======='.$query->time);
+        });
     }
 
     /**

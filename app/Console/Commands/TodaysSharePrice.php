@@ -6,7 +6,6 @@ use Illuminate\Console\Command;
 use Goutte;
 use Illuminate\Support\Carbon;
 
-
 class TodaysSharePrice extends Command
 {
     /**
@@ -42,7 +41,7 @@ class TodaysSharePrice extends Command
     {
         $date = optional(\App\SharePrice::latest()->first())->getAttribute('date') ?? '2010-04-17';
         $date = \Carbon\Carbon::parse($date)->addDay(1)->format('Y-m-d');
-        $maxDate = \Carbon\Carbon::parse($date)->addDays(300)->format('Y-m-d');
+        $maxDate = \Carbon\Carbon::parse($date)->addDays(100)->format('Y-m-d');
         $config= [
             'sn',
             'company',
@@ -55,6 +54,7 @@ class TodaysSharePrice extends Command
             'previous_closing',
             'difference'
         ];
+        $superIndex = 1;
         while(strtotime($date) < strtotime($maxDate)){
             $date = \Carbon\Carbon::parse($date)->addDay()->format('Y-m-d');
             $crawler = Goutte::request('POST','http://www.nepalstock.com/todaysprice',[], [], ['HTTP_CONTENT_TYPE' => 'application/x-www-form-urlencoded'], 'startDate='.$date.'&_limit=1000&stock-symbol=');
@@ -71,11 +71,12 @@ class TodaysSharePrice extends Command
                 });
                 array_push($prices, $td);
             });
-            collect($prices)->each(function($price){
-                $new = \App\SharePrice::where($price)->firstOrNew([]);
+            $sql = collect($prices)->map(function($price, $index){
+                $new = new \App\SharePrice;
                 $new->forceFill($price);
                 $new->save();
             });
+            echo $superIndex++;
         }
     }
 }

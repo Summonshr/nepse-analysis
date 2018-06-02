@@ -38,6 +38,10 @@ class CompanyList extends Command
      */
     public function handle()
     {
+
+        function combiner($array){
+            return [ $array[0] => $array[1] ];
+        }
         $crawler = Goutte::request('GET', 'http://www.nepalstock.com/company?_limit=1000');
 
         $companies = [];
@@ -50,6 +54,10 @@ class CompanyList extends Command
             'type',
             'link',
         ];
+        
+        $profile = [
+            'name'
+        ];
 
         $crawler->filter('#company-list table tr')->each(function($node, $index) use ($config, &$companies){
             if($index < 2 || count($node->filter('td')) == 1){
@@ -57,7 +65,6 @@ class CompanyList extends Command
             }
 
             $company = [];
-
             $node->filter('td')->each(function($tr, $index) use (&$company, $config){
                 if($index == 1){
                     $img = $tr->filter('.company-logo');
@@ -70,7 +77,17 @@ class CompanyList extends Command
                 if($index == 5){
                     $img = $tr->filter('.icon-view');
                     if(count($img)){
-                        $company[$config[$index]] = $img->attr('href');
+                        $href = $img->attr('href');
+                        $company[$config[$index]] = $href;
+                        $crawler = Goutte::request('GET',$href);
+                        $company['profile'] = array_filter(array_collapse($crawler->filter('#company-view .my-table tr')->each(function($node){
+                            if(count($node->filter('td')) < 2){
+                                return;
+                            }
+                            return combiner($node->filter('td')->each(function($node){
+                                return trim($node->html());
+                            }));
+                        }))); 
                     }
                     return;
                 }
@@ -78,8 +95,9 @@ class CompanyList extends Command
             });
             array_push($companies, $company);
         });
+
         collect($companies)->each(function($company){
-            $subject = \App\Company::where('company_id', $company['company_id'])->firstOrNew([]);
+            $subject = \App\Company::where('code', $company['code'])->firstOrNew([]);
             $subject->forceFill($company);
             $subject->save();
         });
