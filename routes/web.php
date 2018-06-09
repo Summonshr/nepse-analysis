@@ -1,8 +1,7 @@
 <?php
-
-
-
-
+Route::get('tester', function () {
+    Artisan::call('scrape:dividend');
+});
 Route::view('/', 'welcome');
 
 Route::get('live-data', function () {
@@ -13,7 +12,7 @@ Route::get('live-data', function () {
 
 Route::get('companies/{company?}', function ($companyCode = null) {
     return collect()->put('companies', $companyCode ? \App\Company::where('code', $companyCode)->first() : cache()->remember('companies-all', 100, function () {
-        return \App\Company::all()->map->toApi();
+        return \App\Company::with('dividends')->get()->map->toApi();
     }));
 });
 
@@ -32,4 +31,10 @@ Route::get('live-data-single', function () {
     })->values());
 });
 
-Route::view('live-stock', 'live');
+
+Route::get('dividends/{code?}', function ($code = null) {
+    if ($code) {
+        return \App\Dividend::where('code', $code)->firstOrFail()->toApi();
+    }
+    return \App\Dividend::all()->map->toApi();
+});

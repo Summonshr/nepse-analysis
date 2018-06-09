@@ -38,8 +38,8 @@ class LiveStock extends Command
      */
     public function handle()
     {
-        logger('working');
         $crawler = Goutte::request('GET','http://www.nepalstock.com/stocklive');
+
         $config = [
             'sn',
             'symbol',
@@ -53,8 +53,11 @@ class LiveStock extends Command
             'volume',
             'previous_closing',
         ];
+        
         $stocks = [];
+        
         $date = trim($crawler->filter('#ticker #date')->html());
+
         $crawler->filter('#home-contents .col-sm-9 table tr')->each(function($node, $index) use (&$stocks,$date, $config){
             if($index < 1){
                 return;
@@ -74,5 +77,6 @@ class LiveStock extends Command
             $stock->forceFill($new);
             $stock->save();
         });
+        
     }
 }
