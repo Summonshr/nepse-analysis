@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Dividend;
 use Illuminate\Console\Command;
 use Goutte;
 
@@ -38,26 +39,35 @@ class Dividends extends Command
      */
     public function handle()
     {
-        \App\Company::with('dividends')->take(100)->get()->map(function ($company, $index) {
-            if ($company->dividends->count() > 0) {
-                return;
-            }
-            $url = 'http://www.nepalipaisa.com/CompanyDetail.aspx/' . $company->code . '/?quote=' . $company->code;
+        \App\Dividend::truncate();
+        \App\Company::all()->map(function ($company, $index) {
+            echo $index;
+            $url = 'http://merolagani.com/CompanyDetail.aspx?symbol=' . $company->code;
             $crawler = Goutte::request('GET', $url);
-            $dividents = array_collapse($crawler->filter('.marketresources_history .overview_dividend tr')->each(function ($node) {
-                $node = $node->filter('td')->each(function ($node) {
-                    return $node->text();
-                });
+            $map = array_filter($crawler->filter('#accordion tbody')->each(function ($node, $index) {
+                if ($index < 12 || $index > 14) {
+                    return;
+                }
+                return $node->filter('table')->each(function ($node) {
+                    return array_filter($node->filter('tr')->each(function ($node, $index) {
+                        if ($index < 1) {
+                            return;
+                        }
+                        return $node->filter('td')->each(function ($node) {
+                            return trim($node->text());
+                        });
 
-                return [str_slug($node[0], '_') => $node[1]];
+                    }));
+                });
             }));
-            if ($dividents == []) {
-                return $dividents;
-            }
-            $dividents['code'] = $company->code;
-            return $dividents;
-        })->filter()->map(function($dividend){
-            return \App\Dividend::forceCreate($dividend);
+            collect($map)->collapse()->each(function ($map, $index) use ($company) {
+                $type = [
+                    'cash',
+                    'bonus',
+                    'right'
+                ];
+                $company->dividend($map, $type[$index]);
+            });
         });
     }
 }

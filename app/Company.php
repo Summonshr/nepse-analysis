@@ -6,8 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Company extends Model
 {
+    public $appends = ['avg_dividend'];
 
     public $casts = ['profile' => 'json'];
+
+    public function getAvgDividendAttribute()
+    {
+        return $this->relationLoaded('dividends') ? $this->dividends->groupBy('type')->map(function ($group) {
+            return round($group->avg('dividend'),2);
+        }) : [];
+    }
 
     public function history()
     {
@@ -18,6 +26,21 @@ class Company extends Model
     {
         return $this->hasMany(Dividend::class, 'code', 'code');
     }
+
+    public function dividend($data, $type)
+    {
+        $this->dividends()->saveMany(collect($data)->filter()->map(function ($map) use ($type) {
+            if (!$map[1] || !$map[2]) {
+                return null;
+            }
+            $divident = new Dividend();
+            $divident->type = $type;
+            $divident->dividend = $map[1];
+            $divident->distribution_date = $map[2];
+            return $divident;
+        })->filter());
+    }
+
 
     public function toApi()
     {

@@ -1,7 +1,4 @@
 <?php
-Route::get('tester', function () {
-    Artisan::call('scrape:dividend');
-});
 Route::view('/', 'welcome');
 
 Route::get('live-data', function () {
@@ -34,7 +31,7 @@ Route::get('live-data-single', function () {
 
 Route::get('dividends/{code?}', function ($code = null) {
     if ($code) {
-        return \App\Dividend::where('code', $code)->firstOrFail()->toApi();
+        return \App\Dividend::where('code', $code)->get();
     }
-    return \App\Dividend::all()->map->toApi();
+    return \App\Dividend::all();
 });

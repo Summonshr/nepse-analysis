@@ -16,11 +16,9 @@ class CreateDividendsTable extends Migration
         Schema::create('dividends', function (Blueprint $table) {
             $table->increments('id');
             $table->string('code');
-            $table->string('cash_dividend');
-            $table->string('bonus_share');
-            $table->string('total_dividend');
-            $table->string('right_share');
-            $table->string('bonuse_distribution_date');
+            $table->string('dividend');
+            $table->string('type');
+            $table->string('distribution_date');
             $table->timestamps();
         });
     }
