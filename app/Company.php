@@ -6,14 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Company extends Model
 {
-    public $appends = ['avg_dividend'];
+    public $appends = ['avg_dividend', 'should_invest'];
 
     public $casts = ['profile' => 'json'];
 
     public function getAvgDividendAttribute()
     {
         return $this->relationLoaded('dividends') ? $this->dividends->groupBy('type')->map(function ($group) {
-            return round($group->avg('dividend'),2);
+            return round($group->avg('dividend'), 2);
         }) : [];
     }
 
@@ -46,8 +46,8 @@ class Company extends Model
     {
         $array = $this->toArray();
         $history = $this->history()->select('id', 'closing_price', 'date')->get();
-        $monthly_analysis = $history->groupBy('month')->map(function ($month) {
-            return ['month' => $month->first()->month, 'value' => ceil($month->avg('closing_price'))];
+        $monthly_analysis = $history->groupBy('month')->mapWithKeys(function ($month, $index) {
+            return [substr($month->first()->month, 0, 3) => ['month' => substr($month->first()->month, 0, 3), 'value' => ceil($month->avg('closing_price'))]];
         })->values();
         $array['highest'] = $monthly_analysis->reduce(function ($carry, $item) {
             if (!$carry) {
@@ -65,5 +65,12 @@ class Company extends Model
 
         $array['latest_share_price'] = optional($history->sortByDesc('id')->first())->closing_price;
         return $array;
+    }
+
+    public function getShouldInvestAttribute()
+    {
+        return $this->dividends->groupBy('type')->map(function ($group) {
+            return $group->avg('dividend') < $group->sortByDesc('distribution_date')->first()->dividend;
+        });
     }
 }
