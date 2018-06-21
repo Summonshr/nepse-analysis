@@ -35,3 +35,45 @@ Route::get('dividends/{code?}', function ($code = null) {
     }
     return \App\Dividend::all();
 });
+
+
+Route::get('articles', function(){
+    return [
+        [
+            'group'=>'beginner',
+            'articles'=>[
+                [
+                    'name'=>'What is a "Stock"',
+                    'url'=>'https://www.investopedia.com/terms/s/stock.asp'
+                ],
+                [
+                    'name'=>'How to Invest in Stocks?',
+                    'url'=>'https://www.nerdwallet.com/blog/investing/how-to-invest-in-stocks/'
+                ],
+                [
+                    'name'=>'The Complete Beginner\'s Guide to Investing in Stock',
+                    'url'=>'https://www.thebalance.com/the-complete-beginner-s-guide-to-investing-in-stock-358114'
+                ]
+            ]
+        ],
+        [
+            'group'=>'Intermediate',
+            'articles'=>[
+                [
+                    'name'=>'What is a "Stock"',
+                    'url'=>'https://www.investopedia.com/terms/s/stock.asp'
+                ],
+                [
+                    'name'=>'How to Invest in Stocks?',
+                    'url'=>'https://www.nerdwallet.com/blog/investing/how-to-invest-in-stocks/'
+                ],
+                [
+                    'name'=>'The Complete Beginner\'s Guide to Investing in Stock',
+                    'url'=>'https://www.thebalance.com/the-complete-beginner-s-guide-to-investing-in-stock-358114'
+                ]
+            ]
+        ]
+    ];
+});
+
+Route::view('articles/what-is-stock','articles.what-is-stock');
