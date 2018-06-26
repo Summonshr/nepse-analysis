@@ -23,4 +23,11 @@ class SharePrice extends Model
     public function getMonthAttribute(){
         return \Carbon\Carbon::parse($this->date)->format('F');
     }
+
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company', 'name');
+    }
+
 }
