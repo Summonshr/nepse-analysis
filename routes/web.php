@@ -104,3 +104,4 @@ Route::group(['prefix'=>'articles'], function(){
         return view('articles.'.$article);
     });
 });
+
