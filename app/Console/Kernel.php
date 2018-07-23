@@ -26,7 +26,9 @@ class Kernel extends ConsoleKernel
     {
        $schedule->command('scrape:livestock')
                 ->everyMinute();
-    }
+       $schedule->command('scrape:todays-share-price')
+                ->everyMinute();
+   }
 
     /**
      * Register the commands for the application.
