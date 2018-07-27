@@ -13,11 +13,10 @@ class Scraper extends DuskTestCase
      *
      * @return void
      */
-    public function testExample()
+    public function testLoginFeature()
     {
-
         $this->browse(function (Browser $browser) {
-            $browser->visit('http://sharesansar.com/company/scb')
+            $browser->visit('https://meroshare.cdsc.com.np')
                 ->click('#btn_companyprofile_dividend')
                 ->see('Bonus Share');
         });
