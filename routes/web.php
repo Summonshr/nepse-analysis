@@ -1,12 +1,22 @@
 <?php
-Route::get('growth-graph',function(){
-    return \App\SharePrice::with('company')->latest()->take(7000)->select(['company','date','closing_price'])->get()->groupBy('company')->map(function($group, $key){
+
+
+Route::post('download-json', function () {
+    $name = str_random(8) . '.stocknp';
+
+    Storage::disk('public')->put($name, collect(request('json'))->toJson());
+
+    return ['href' => url(Storage::url($name))];
+});
+
+Route::get('growth-graph', function () {
+    return \App\SharePrice::with('company')->latest()->take(7000)->select(['company', 'date', 'closing_price'])->get()->groupBy('company')->map(function ($group, $key) {
         $last = 0;
-        if($group->count() < 20){
+        if ($group->count() < 20) {
             return false;
         }
-        $values = $group->pluck('date','closing_price')->sort()->flip()->map(function($single) use (&$last){
-            if($last > $single) {
+        $values = $group->pluck('date', 'closing_price')->sort()->flip()->map(function ($single) use (&$last) {
+            if ($last > $single) {
                 $last = $single;
                 return 'L';
             }
@@ -14,10 +24,10 @@ Route::get('growth-graph',function(){
             return 'G';
         });
 
-        
+
         $count = array_count_values($values->values()->toArray());
-        return ['count'=>$count, 'values'=>$values, 'name'=>$key,'code'=>data_get($group->first()->getRelationValue('company'),'code')];
-    })->filter(function($each){
+        return ['count' => $count, 'values' => $values, 'name' => $key, 'code' => data_get($group->first()->getRelationValue('company'), 'code')];
+    })->filter(function ($each) {
         return $each['count']['G'] >= 10 && $each['count']['G'] >= $each['count']['L'];
     })->sortByDesc('count.G')->values();
 });
@@ -31,7 +41,7 @@ Route::get('live-data', function () {
 });
 
 Route::get('companies/{company?}', function ($companyCode = null) {
-    return collect()->put('companies', $companyCode ? \App\Company::where('code', $companyCode)->first() : cache()->remember('companies-all-'.request('minimal', 5), 10, function () {
+    return collect()->put('companies', $companyCode ? \App\Company::where('code', $companyCode)->first() : cache()->remember('companies-all-' . request('minimal', 5), 10, function () {
         return \App\Company::with('dividends')->get()->map->toApi();
     }));
 });
@@ -60,48 +70,48 @@ Route::get('dividends/{code?}', function ($code = null) {
 });
 
 
-Route::get('articles', function(){
+Route::get('articles', function () {
     return [
         [
-            'group'=>'beginner',
-            'articles'=>[
+            'group' => 'beginner',
+            'articles' => [
                 [
-                    'name'=>'What is a "Stock"',
-                    'url'=>url('articles/what-is-stock')
+                    'name' => 'What is a "Stock"',
+                    'url' => url('articles/what-is-stock')
                 ],
                 [
-                    'name'=>'How to Invest in Stocks?',
-                    'url'=>'https://www.nerdwallet.com/blog/investing/how-to-invest-in-stocks/'
+                    'name' => 'How to Invest in Stocks?',
+                    'url' => 'https://www.nerdwallet.com/blog/investing/how-to-invest-in-stocks/'
                 ],
                 [
-                    'name'=>'The Complete Beginner\'s Guide to Investing in Stock',
-                    'url'=>'https://www.thebalance.com/the-complete-beginner-s-guide-to-investing-in-stock-358114'
+                    'name' => 'The Complete Beginner\'s Guide to Investing in Stock',
+                    'url' => 'https://www.thebalance.com/the-complete-beginner-s-guide-to-investing-in-stock-358114'
                 ]
             ]
         ],
         [
-            'group'=>'Intermediate',
-            'articles'=>[
+            'group' => 'Intermediate',
+            'articles' => [
                 [
-                    'name'=>'What is a "Stock"',
-                    'url'=>'https://www.investopedia.com/terms/s/stock.asp'
+                    'name' => 'What is a "Stock"',
+                    'url' => 'https://www.investopedia.com/terms/s/stock.asp'
                 ],
                 [
-                    'name'=>'How to Invest in Stocks?',
-                    'url'=>'https://www.nerdwallet.com/blog/investing/how-to-invest-in-stocks/'
+                    'name' => 'How to Invest in Stocks?',
+                    'url' => 'https://www.nerdwallet.com/blog/investing/how-to-invest-in-stocks/'
                 ],
                 [
-                    'name'=>'The Complete Beginner\'s Guide to Investing in Stock',
-                    'url'=>'https://www.thebalance.com/the-complete-beginner-s-guide-to-investing-in-stock-358114'
+                    'name' => 'The Complete Beginner\'s Guide to Investing in Stock',
+                    'url' => 'https://www.thebalance.com/the-complete-beginner-s-guide-to-investing-in-stock-358114'
                 ]
             ]
         ]
     ];
 });
 
-Route::group(['prefix'=>'articles'], function(){
-    Route::get('{article}',function($article){
-        return view('articles.'.$article);
+Route::group(['prefix' => 'articles'], function () {
+    Route::get('{article}', function ($article) {
+        return view('articles.' . $article);
     });
 });
 
