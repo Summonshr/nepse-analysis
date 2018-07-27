@@ -27,6 +27,11 @@ class Company extends Model
         return $this->hasMany(Dividend::class, 'code', 'code');
     }
 
+    public function livestock()
+    {
+        return $this->hasMany(LiveStock::class, 'symbol', 'code');
+    }
+
     public function dividend($data, $type)
     {
         $this->dividends()->saveMany(collect($data)->filter()->map(function ($map) use ($type) {
@@ -44,10 +49,18 @@ class Company extends Model
 
     public function toApi()
     {
+        if (request('minimal')) {
+            $this->latest_share_price = optional($this->livestock()->select('ltp')->latest()->first())->ltp;
+            return array_only($this->toArray(), ['code', 'latest_share_price']);
+        }
         $array = $this->toArray();
+
         $history = $this->history()->select('id', 'closing_price', 'date')->get();
+
         $monthly_analysis = $history->groupBy('month')->mapWithKeys(function ($month, $index) {
+
             return [substr($month->first()->month, 0, 3) => ['month' => substr($month->first()->month, 0, 3), 'value' => ceil($month->avg('closing_price'))]];
+
         })->values();
         $array['highest'] = $monthly_analysis->reduce(function ($carry, $item) {
             if (!$carry) {

@@ -16,10 +16,15 @@ class ExampleTest extends DuskTestCase
     public function testBasicExample()
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('http://sharesansar.com/company/scb')
-                ->click('#btn_companyprofile_dividend')
-                ->waitForText('Bonus Share');
+            $browser->visit('https://meroshare.cdsc.com.np')
+                ->select('dp_id',10600)
+                ->type('LoginID','1296023')
+                ->type('Password','129cdsshR!1')
+                ->click('[type=submit]')
+                ->pause(1000)
+                ->click('#Portfolio')
+                ->pause(1000)
+                ->screenshot('Portfolio');
         });
-
     }
 }
