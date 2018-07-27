@@ -31,8 +31,7 @@ Route::get('live-data', function () {
 });
 
 Route::get('companies/{company?}', function ($companyCode = null) {
-    cache()->flush();
-    return collect()->put('companies', $companyCode ? \App\Company::where('code', $companyCode)->first() : cache()->remember('companies-all', 100, function () {
+    return collect()->put('companies', $companyCode ? \App\Company::where('code', $companyCode)->first() : cache()->remember('companies-all', 10, function () {
         return \App\Company::with('dividends')->get()->map->toApi();
     }));
 });
