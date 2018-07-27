@@ -1,12 +1,17 @@
 <?php
 
+Route::post('export-json', function () {
+    $key = str_random(8);
 
-Route::post('download-json', function () {
-    $name = str_random(8) . '.stocknp';
+    $name = $key . '.stocknp';
 
     Storage::disk('public')->put($name, collect(request('json'))->toJson());
 
-    return ['href' => url(Storage::url($name))];
+    return ['key' => $key];
+});
+
+Route::get('import-json/{key}', function ($key) {
+    return ['data' => Storage::disk('public')->get($key . '.stocknp')];
 });
 
 Route::get('growth-graph', function () {
