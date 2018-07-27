@@ -51,7 +51,7 @@ class Company extends Model
     {
         if (request('minimal')) {
             $this->latest_share_price = optional($this->livestock()->select('ltp')->latest()->first())->ltp;
-            return array_only($this->toArray(), ['code', 'latest_share_price']);
+            return array_only($this->toArray(), ['code', 'name', 'latest_share_price']);
         }
         $array = $this->toArray();
 
@@ -77,6 +77,7 @@ class Company extends Model
         });
 
         $array['latest_share_price'] = optional($history->sortByDesc('id')->first())->closing_price;
+
         return $array;
     }
 
