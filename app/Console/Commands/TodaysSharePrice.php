@@ -30,7 +30,7 @@ class TodaysSharePrice extends Command
     public function handle()
     {
         $date = optional(\App\SharePrice::latest()->first())->getAttribute('date') ?? '2010-04-17';
-        $date = \Carbon\Carbon::parse($date)->addDay(1)->format('Y-m-d');
+        $date = \Carbon\Carbon::parse($date)->format('Y-m-d');
         $maxDate = \Carbon\Carbon::parse($date)->addDays(5)->format('Y-m-d');
         $config= [
             'sn',
