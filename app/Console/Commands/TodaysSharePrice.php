@@ -62,7 +62,7 @@ class TodaysSharePrice extends Command
                 array_push($prices, $td);
             });
             collect($prices)->map(function($price, $index){
-                $new = \App\SharePrice::where('date', $price['date'])->firstOrNew([]);
+                $new = new \App\SharePrice();
                 $new->forceFill($price);
                 $new->save();
             });
