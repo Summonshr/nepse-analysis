@@ -1,5 +1,4 @@
 <?php
-
 Route::post('export-json', function () {
     $key = str_random(8);
 

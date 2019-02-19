@@ -53,6 +53,7 @@ class Company extends Model
             $this->latest_share_price = optional($this->livestock()->select('ltp')->latest()->first())->ltp;
             return array_only($this->toArray(), ['code', 'name', 'latest_share_price']);
         }
+
         $array = $this->toArray();
 
         $history = $this->history()->select('id', 'closing_price', 'date')->get();

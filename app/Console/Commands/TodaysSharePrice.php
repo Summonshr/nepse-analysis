@@ -20,28 +20,18 @@ class TodaysSharePrice extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Share Price of Todays';
 
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
     public function handle()
     {
         $date = optional(\App\SharePrice::latest()->first())->getAttribute('date') ?? '2010-04-17';
         $date = \Carbon\Carbon::parse($date)->addDay(1)->format('Y-m-d');
-        $maxDate = \Carbon\Carbon::parse($date)->addDays(3)->format('Y-m-d');
+        $maxDate = \Carbon\Carbon::parse($date)->addDays(10)->format('Y-m-d');
         $config= [
             'sn',
             'company',
