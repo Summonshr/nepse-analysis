@@ -1,5 +1,6 @@
 <?php
 
+Artisan::call('scrape:todays-share-price');
 Route::post('export-json', function () {
     $key = str_random(8);
 
@@ -28,8 +29,6 @@ Route::get('growth-graph', function () {
             $last = $single;
             return 'G';
         });
-
-
         $count = array_count_values($values->values()->toArray());
         return ['count' => $count, 'values' => $values, 'name' => $key, 'code' => data_get($group->first()->getRelationValue('company'), 'code')];
     })->filter(function ($each) {
@@ -66,57 +65,9 @@ Route::get('live-data-single', function () {
     })->values());
 });
 
-
 Route::get('dividends/{code?}', function ($code = null) {
     if ($code) {
         return \App\Dividend::where('code', $code)->get();
     }
     return \App\Dividend::all();
 });
-
-
-Route::get('articles', function () {
-    return [
-        [
-            'group' => 'beginner',
-            'articles' => [
-                [
-                    'name' => 'What is a "Stock"',
-                    'url' => url('articles/what-is-stock')
-                ],
-                [
-                    'name' => 'How to Invest in Stocks?',
-                    'url' => 'https://www.nerdwallet.com/blog/investing/how-to-invest-in-stocks/'
-                ],
-                [
-                    'name' => 'The Complete Beginner\'s Guide to Investing in Stock',
-                    'url' => 'https://www.thebalance.com/the-complete-beginner-s-guide-to-investing-in-stock-358114'
-                ]
-            ]
-        ],
-        [
-            'group' => 'Intermediate',
-            'articles' => [
-                [
-                    'name' => 'What is a "Stock"',
-                    'url' => 'https://www.investopedia.com/terms/s/stock.asp'
-                ],
-                [
-                    'name' => 'How to Invest in Stocks?',
-                    'url' => 'https://www.nerdwallet.com/blog/investing/how-to-invest-in-stocks/'
-                ],
-                [
-                    'name' => 'The Complete Beginner\'s Guide to Investing in Stock',
-                    'url' => 'https://www.thebalance.com/the-complete-beginner-s-guide-to-investing-in-stock-358114'
-                ]
-            ]
-        ]
-    ];
-});
-
-Route::group(['prefix' => 'articles'], function () {
-    Route::get('{article}', function ($article) {
-        return view('articles.' . $article);
-    });
-});
-
