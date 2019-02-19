@@ -46,9 +46,11 @@ class TodaysSharePrice extends Command
         ];
         $superIndex = 1;
         while(strtotime($date) < strtotime($maxDate)){
-            $date = \Carbon\Carbon::parse($date)->format('Y-m-d');
+
+            $date = \Carbon\Carbon::parse($date)->addDay()->format('Y-m-d');
             $crawler = Goutte::request('POST','http://www.nepalstock.com/todaysprice',[], [], ['HTTP_CONTENT_TYPE' => 'application/x-www-form-urlencoded'], 'startDate='.$date.'&_limit=1000&stock-symbol=');
             $prices = [];
+
             $crawler->filter('#home-contents table tr')->each(function($node, $index) use ($date,&$prices, $config){
                 if( $index < 2 || count($node->filter('td')) < 10){
                     return;
@@ -61,6 +63,7 @@ class TodaysSharePrice extends Command
                 });
                 array_push($prices, $td);
             });
+
             collect($prices)->map(function($price, $index){
                 $new = new \App\SharePrice();
                 $new->forceFill($price);
