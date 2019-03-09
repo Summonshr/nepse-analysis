@@ -13,6 +13,9 @@ Route::get('import-json/{key}', function ($key) {
     return ['data' => Storage::disk('public')->get($key . '.stocknp')];
 });
 
+Route::get('sample',function(){
+	Artisan::call('scrape:todays-share-price');
+});
 Route::get('growth-graph', function () {
     return \App\SharePrice::with('company')->latest()->take(7000)->select(['company', 'date', 'closing_price'])->get()->groupBy('company')->map(function ($group, $key) {
         $last = 0;
