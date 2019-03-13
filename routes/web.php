@@ -15,6 +15,7 @@ Route::get('import-json/{key}', function ($key) {
 
 Route::get('sample',function(){
 	Artisan::call('scrape:todays-share-price');
+	Artisan::call('cache:clear');
 });
 Route::get('growth-graph', function () {
     return \App\SharePrice::with('company')->latest()->take(7000)->select(['company', 'date', 'closing_price'])->get()->groupBy('company')->map(function ($group, $key) {
