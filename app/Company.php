@@ -97,6 +97,8 @@ class Company extends Model
     {
         $arr = $this->only(['code','name','type']);
 
+        $arr['closing_price'] = $this->history()->orderByDesc('id')->first()->closing_price ?? 0;
+
         $arr = array_merge($arr, $this->report->only(['previous_quarter','previous_year','earning_per_share','current_quarter']) ?? []);
         
         return $arr;

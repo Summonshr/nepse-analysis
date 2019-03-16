@@ -14,7 +14,7 @@ class ReportController extends Controller
 
     public function show(Request $request, $code)
     {
-        $company = \App\Company::with('report')->where('code', $code)->first();
+        $company = \App\Company::with(['report'])->where('code', $code)->first();
 
         if(!$company){
             return view('report.index');
