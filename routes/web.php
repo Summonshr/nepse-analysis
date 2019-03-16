@@ -6,10 +6,11 @@ Route::group(['middleware'=>'cache'], function(){
     });
     Route::get('growth-graph', 'GrowthGraph');
     Route::get('live-data', 'LiveData');
-    Route::get('companies/{company?}', 'Company');
-    Route::get('companies/{company}/history', 'History');
+    Route::get('company.json','Company');
+    Route::get('company/{company}.json', 'Company');
+    Route::get('history/{company}.json', 'History');
     Route::get('live-data-single', 'LiveDataSingle');
-    Route::get('dividends/{code?}', 'Dividend');
+    Route::get('dividends/{code}.json', 'Dividend');
     Route::get('report.json','QuarterlyReport@display');
 });
 Route::get('report','ReportController@index');
