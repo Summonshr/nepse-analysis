@@ -88,4 +88,17 @@ class Company extends Model
             return $group->avg('dividend') < $group->sortByDesc('distribution_date')->first()->dividend;
         });
     }
+
+    public function report(){
+        return $this->hasOne(Report::class,'code','code')->withDefault();
+    }
+
+    public function toReport()
+    {
+        $arr = $this->only(['code','name','type']);
+
+        $arr = array_merge($arr, $this->report->only(['previous_quarter','previous_year','earning_per_share','current_quarter']) ?? []);
+        
+        return $arr;
+    }
 }
