@@ -10,7 +10,7 @@ Route::group(['middleware'=>'cache'], function(){
     Route::get('companies/{company}/history', 'History');
     Route::get('live-data-single', 'LiveDataSingle');
     Route::get('dividends/{code?}', 'Dividend');
-    Route::get('quarterly-report/{second}','QuarterlyReport@display');
+    Route::get('report.json','QuarterlyReport@display');
 });
 Route::get('report','ReportController@index');
 Route::get('report/{code}','ReportController@show');
