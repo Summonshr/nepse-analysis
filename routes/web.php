@@ -12,12 +12,20 @@ Route::group(['middleware'=>'cache'], function(){
     Route::get('live-data-single', 'LiveDataSingle');
     Route::get('dividends/{code}.json', 'Dividend');
     Route::get('report.json','QuarterlyReport@display');
+    Route::get('news/{code}.json','NewsReport@display');
 });
+
 Route::get('report','ReportController@index');
 Route::get('report/{code}','ReportController@show');
 Route::put('report/{code}','ReportController@update');
-Route::get('sample',function(){
+Route::get('fetch-share',function(){
     Artisan::call('scrape:todays-share-price');
     Artisan::call('cache:clear');
-    return redirect("report.json");
+    return redirect("https://stocknp.com/quarterly-analysis/all");
+});
+
+Route::get('fetch-news',function(){
+    Artisan::call('fetch:news');
+    Artisan::call('cache:clear');
+    return redirect("https://stocknp.com/quarterly-analysis/all");
 });

@@ -17,6 +17,7 @@ class CreateNewsTable extends Migration
             $table->bigIncrements('id');
             $table->date('date');
             $table->string('type');
+            $table->string('code');
             $table->text('href');
             $table->text('text');
             $table->timestamps();

@@ -64,7 +64,7 @@ class FetchNews extends Command
         Company::all()->map(function ($company) use ($urls) {
             $urls->map(function ($e) use ($company) {
                 $data = Goutte::setHeader('X-Requested-With', 'XMLHttpRequest')->request('GET', $e['url'] . $company->id);
-                $data->filter('tbody tr')->each(function ($node) use ($e) {
+                $data->filter('tbody tr')->each(function ($node) use ($e, $company) {
                     $arr = [];
                     $node->filter('td')->each(function ($node, $index) use (&$arr) {
                         if ($index == 0) {
@@ -78,6 +78,7 @@ class FetchNews extends Command
                     if ($arr['date'] != ' No Record Found.' && !News::where($arr)->exists()) {
                         $news = new News();
                         $news->type = $e['type'];
+                        $news->code = $company->code;
                         $news->forceFill($arr);
                         $news->save();
                     }
