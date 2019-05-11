@@ -9,6 +9,7 @@
         "barryvdh/laravel-cors": "^0.11.3",
         "fideloper/proxy": "^4.1",
         "laravel/framework": "5.8.*",
+        "spatie/async": "^1.0",
         "spatie/laravel-cors": "^1.4",
         "weidner/goutte": "^1.0"
     },
