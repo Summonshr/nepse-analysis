@@ -63,7 +63,7 @@ class FetchNews extends Command
         $urls = collect($urls);
         Company::all()->map(function ($company) use ($urls) {
             $urls->map(function ($e) use ($company) {
-                $data = Goutte::setHeader('X-Requested-With', 'XMLHttpRequest')->request('GET', $e['url'] . $company->id);
+                $data = Goutte::setHeader('X-Requested-With', 'XMLHttpRequest')->request('GET', $e['url'] . $company->share_sansar_id);
                 $data->filter('tbody tr')->each(function ($node) use ($e, $company) {
                     $arr = [];
                     $node->filter('td')->each(function ($node, $index) use (&$arr) {
