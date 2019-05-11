@@ -28,6 +28,10 @@ class FetchShareSansarId extends Command
      */
     public function handle()
     {
- 
+        \App\Company::all()->map(function($company){
+            $crawler = Goutte::request('GET','https://www.sharesansar.com/company/'.strtolower($company->code));
+            $company->share_sansar_id = $crawler->filter('#companyid')->extract('value')[0];
+            $company->save();
+        });
     }
 }
