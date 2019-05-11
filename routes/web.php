@@ -1,7 +1,5 @@
 <?php
 
-dd(Artisan::call('fetch:news'));
-
 Route::group(['middleware'=>'cache'], function(){
     Route::get('/', function(){
         die('Nothing here');
