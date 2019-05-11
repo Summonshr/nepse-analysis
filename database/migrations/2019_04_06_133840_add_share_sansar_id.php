@@ -26,7 +26,7 @@ class AddShareSansarId extends Migration
     public function down()
     {
         Schema::table('companies', function (Blueprint $table) {
-            //
+            $table->dropColumn('share_sansar_id');
         });
     }
 }
