@@ -8,6 +8,6 @@ class NewsReport extends Controller
 {
     public function display($code)
     {
-        return ['data'=> \App\News::where('code', $code)->get()];
+        return ['data'=> \App\News::where('code', $code)->orderByDesc('date')->get()];
     }
 }
