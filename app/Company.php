@@ -103,4 +103,9 @@ class Company extends Model
         
         return $arr;
     }
+
+    public function news()
+    {
+        return $this->hasMany(News::class, 'code','code');
+    }
 }

@@ -61,7 +61,9 @@ class FetchNews extends Command
         ];
 
         $urls = collect($urls);
-        Company::all()->map(function ($company) use ($urls) {
+        Company::with(['news'=>function($query){
+            return $query->select('code','href');
+        }])->select('code','share_sansar_id')->get()->map(function ($company) use ($urls) {
             $urls->map(function ($e) use ($company) {
                 $data = Goutte::setHeader('X-Requested-With', 'XMLHttpRequest')->request('GET', $e['url'] . $company->share_sansar_id);
                 $data->filter('tbody tr')->each(function ($node) use ($e, $company) {
@@ -75,7 +77,7 @@ class FetchNews extends Command
                             $arr['text'] = $node->filter('a')->html();
                         }
                     });
-                    if ($arr['date'] != ' No Record Found.' && !News::where($arr)->exists()) {
+                    if ($arr['date'] != ' No Record Found.' && $company->news->where('href', $arr['href'])->count() == 0) {
                         $news = new News();
                         $news->forceFill($arr);
                         $news->save();
