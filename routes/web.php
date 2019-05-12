@@ -1,5 +1,7 @@
 <?php
 
+Route::get('key-movements', 'Movements@display');
+
 Route::group(['middleware'=>'cache'], function(){
     Route::get('/', function(){
         die('Nothing here');
