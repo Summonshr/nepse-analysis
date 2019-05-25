@@ -77,11 +77,9 @@ class Company extends Model
             return $carry['value'] < $item['value'] ? $carry : $item;
         });
 
-     
-
         $array['latest_share_price'] = optional($history->sortByDesc('id')->first())->closing_price;
 
-        return array_only($array, ['code','earning_per_share','name','profile','type']);
+        return $array;
     }
 
     public function getShouldInvestAttribute()
