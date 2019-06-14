@@ -1,5 +1,5 @@
 <?php
-
+Artisan::call('fetch:photos');
 Route::get('key-movements', 'Movements@display');
 
 Route::group(['middleware'=>'cache'], function(){
